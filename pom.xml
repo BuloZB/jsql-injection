@@ -62,7 +62,7 @@
     <dependency>
       <groupId>net.coderazzi</groupId>
       <artifactId>tablefilter-swing</artifactId>
-      <version>5.1.1</version>
+      <version>5.5.4</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
