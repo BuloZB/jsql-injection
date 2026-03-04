@@ -17,9 +17,9 @@ class CheckAllJsonParamSuiteIT extends ConcreteMysqlSuiteIT {
 
         model.subscribe(new SubscriberLogger(model));
 
-        model.getMediatorUtils().parameterUtil().initQueryString("http://localhost:8080/json");
+        model.getMediatorUtils().parameterUtil().initQueryString("http://localhost:8080/json?tenant=mysql");
         model.getMediatorUtils().parameterUtil().initRequest("""
-            tenant=mysql&name={
+            name={
                 "c": 1,
                 "b": {
                     "b": [
@@ -34,7 +34,7 @@ class CheckAllJsonParamSuiteIT extends ConcreteMysqlSuiteIT {
                     ]
                 }
             }
-        """);
+            """);
 
         model.setIsScanning(true);
         

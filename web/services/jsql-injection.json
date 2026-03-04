@@ -1,22 +1,21 @@
 {
     "version": "0.114",
     "news": [
-        "[v0.114] Parameter selection and HTTP request import are released. Now procrastinating, until bugs wake me. Also users",
-        "[Java] For running v0.114, please bump your jdk to 21 at least. You did? Can you see this message? Does anyone care?",
+        "[v0.114] Releasing parameter selection and HTTP request import. Now procrastinating, until bugs wake me. Or users",
+        "[Java] Running v0.114 ? please bump your jdk to at least 21. You did already ? Can you see this message ? Does anyone care ?",
         "[True story] This tool is for my own purpose, do not use it.",
-        "[DNS strategy] You're a security expert? Are you joking? Though give a try to the new DNS strategy, you can test it locally without any domain",
-        "[RCE shell] How can you trigger RCE shell and reverse shell with one click? For details go to https://github.com/ron190/jsql-injection/wiki/Exploit",
+        "[DNS strategy] You're a security expert ? Are you joking ? Though give a try to the new DNS strategy, you can test it locally without any domain",
+        "[RCE shell] How can you trigger RCE shell and reverse shell with one click ? For details go to https://github.com/ron190/jsql-injection/wiki/Exploit",
         "[Pinned] Report any bugs and thoughts, add your star at https://github.com/ron190/jsql-injection",
-        "  ░░ ░            ░ ░        ░  ░    ░ ░",
-        " ▒█████   █     █░███▄    █ ▓█████ ▓█████▄",
-        "▒██▒  ██▒▓█░ █ ░█░██ ▀█   █ ▓█   ▀ ▒██▀ ██▌",
-        "▒██░  ██▒▒█░ █ ░█▓██  ▀█ ██▒▒███   ░██   █▌",
-        "▒██   ██░░█░ █ ░█▓██▒  ▐▌██▒▒▓█  ▄ ░▓█▄   ▌",
-        "░ ████▓▒░░░██▒██▓▒██░   ▓██░░▒████▒░▒████▓",
-        "░ ▒░▒░▒░ ░ ▓░▒ ▒ ░ ▒░   ▒ ▒ ░░ ▒░ ░ ▒▒▓  ▒",
-        "  ░ ▒ ▒░   ▒ ░ ░ ░ ░░   ░ ▒░ ░ ░  ░ ░ ▒  ▒",
-        "    ░ ▒    ░   ░    ░     ░    ░    ░ ░ ",
-        "[Your love for sweets possessed you. You still remember your cotton candy overdose]"
+        "░     ░      ░ ░",
+        "██▓ ▄████▄  ▓█████",
+        "▓██▒▒██▀ ▀█  ▓█   ▀",
+        "▒██▒▒▓█    ▄ ▒███",
+        "░██░▒▓▓▄ ▄██▒▒▓█  ▄",
+        "░██░▒ ▓███▀ ░░▒████▒",
+        "░▓  ░ ░▒ ▒  ░░░ ▒░ ░",
+        "▒ ░  ░  ▒    ░ ░  ░",
+        "▒ ░░           ░",
+        "[Red hot sun daily piercing your skin tanned by yearly summer. Melting in your favorite drink, devastated by your punches and swinging pickaxe]"
     ]
 }
-

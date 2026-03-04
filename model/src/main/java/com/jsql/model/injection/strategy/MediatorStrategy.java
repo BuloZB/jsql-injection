@@ -153,10 +153,15 @@ public class MediatorStrategy {
             
             String characterInsertion = this.injectionModel.getMediatorUtils().preferencesUtil().isNotSearchingCharInsertion()
                 ? characterInsertionByUser
-                : new SuspendableGetCharInsertion(this.injectionModel).run(
+                : new SuspendableGetCharInsertion(this.injectionModel, parameterOriginalValue).run(
                     new Input(characterInsertionByUser)
                 );
-            if (characterInsertion.contains(InjectionModel.STAR)) {  // When injecting all parameters or JSON
+            if (this.injectionModel.getMediatorUtils().parameterUtil().isRequestSoap()) {
+                parameterToInject.setValue(StringUtils.EMPTY);  // key only when soap
+                this.injectionModel.getMediatorUtils().parameterUtil().initRequest(
+                    parameterToInject.getKey().replace(InjectionModel.STAR, characterInsertion)
+                );
+            } else if (characterInsertion.contains(InjectionModel.STAR)) {  // When injecting all parameters or JSON
                 parameterToInject.setValue(characterInsertion);
             } else {  // When injecting last parameter
                 parameterToInject.setValue(characterInsertion.replaceAll("(\\w)$", "$1+") + InjectionModel.STAR);
@@ -164,8 +169,8 @@ public class MediatorStrategy {
             insertionGeneric = characterInsertion;
         } else if (this.injectionModel.getMediatorUtils().connectionUtil().getUrlBase().contains(InjectionModel.STAR)) {
             LOGGER.log(LogLevelUtil.CONSOLE_DEFAULT, "Checking [path] params...");
-            String characterInsertion = new SuspendableGetCharInsertion(this.injectionModel).run(
-                new Input(StringUtils.EMPTY)
+            String characterInsertion = new SuspendableGetCharInsertion(this.injectionModel, parameterOriginalValue).run(
+                new Input(InjectionModel.STAR + this.injectionModel.getMediatorEngine().getEngine().instance().endingComment())
             );
             String urlBase = this.injectionModel.getMediatorUtils().connectionUtil().getUrlBase();
             this.injectionModel.getMediatorUtils().connectionUtil().setUrlBase(
@@ -179,11 +184,12 @@ public class MediatorStrategy {
             new SuspendableGetEngine(this.injectionModel).run();
         }
 
+        String finalInsertionGeneric = insertionGeneric;
         LOGGER.log(
             LogLevelUtil.CONSOLE_INFORM,
-            "Using [{}] and character insertion [{}]",
-            this.injectionModel.getMediatorEngine().getEngine(),
-            insertionGeneric.trim()  // trim space prefix in cookie
+            "Using [{}] and prefix [{}]",
+            () -> this.injectionModel.getMediatorEngine().getEngine(),
+            () -> SuspendableGetCharInsertion.format(finalInsertionGeneric)
         );
         this.injectionModel.sendToViews(new Seal.MarkEngineFound(this.injectionModel.getMediatorEngine().getEngine()));
 
@@ -196,9 +202,9 @@ public class MediatorStrategy {
             // Multibit requires '0'
             // TODO char insertion 0' should also work on "where x='$param'"
             var backupCharacterInsertion = parameterToInject.getValue();
-            parameterToInject.setValue(InjectionModel.STAR);
+            parameterToInject.setValue(InjectionModel.STAR + this.injectionModel.getMediatorEngine().getEngine().instance().endingComment());
             this.multibit.checkApplicability();
-            parameterToInject.setValue(backupCharacterInsertion);
+            parameterToInject.setValue(backupCharacterInsertion);  // required to restore after check
         } else {
             this.multibit.checkApplicability();
         }

@@ -1,6 +1,5 @@
 package spring.soap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsql.util.LogLevelUtil;
 import jakarta.persistence.EntityManager;
@@ -29,7 +28,7 @@ public class CountryRepository {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
-	public Country findCountry(String name) throws JsonProcessingException {
+	public Country findCountry(String name) {
         Country country = new Country();
         String nameUrlDecoded = URLDecoder.decode(name, StandardCharsets.UTF_8);
         try {

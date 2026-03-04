@@ -21,7 +21,7 @@ public class PanelInjection extends JPanel {
     public static final String RADIO_IS_DEFAULT_STRATEGY = "radioIsDefaultStrategy";
 
     private final JCheckBox checkboxIsNotShowingVulnReport = new JCheckBox("Disable showing vulnerability report", MediatorHelper.model().getMediatorUtils().preferencesUtil().isNotShowingVulnReport());
-    private final JCheckBox checkboxIsNotSearchingCharInsertion = new JCheckBox("Disable search for character insertion", MediatorHelper.model().getMediatorUtils().preferencesUtil().isNotSearchingCharInsertion());
+    private final JCheckBox checkboxIsNotSearchingCharInsertion = new JCheckBox("Disable search for prefix", MediatorHelper.model().getMediatorUtils().preferencesUtil().isNotSearchingCharInsertion());
     private final JCheckBox checkboxIsNotInjectingMetadata = new JCheckBox("Disable search of database name, version and user metadata", MediatorHelper.model().getMediatorUtils().preferencesUtil().isNotInjectingMetadata());
     private final JCheckBox checkboxIsParsingForm = new JCheckBox("Get HTML tags <input/> and add parameters to URL and Request", MediatorHelper.model().getMediatorUtils().preferencesUtil().isParsingForm());
     

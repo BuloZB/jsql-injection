@@ -63,8 +63,8 @@ public class TabbedPaneNetworkTab extends TabbedPaneWheeled {
         I18nViewUtil.addComponentForKey("NETWORK_LINE_PLACEHOLDER_REQUEST", this.textAreaRequest);
         Stream.of(
             new SimpleEntry<>("NETWORK_TAB_URL_LABEL", this.textAreaUrl),
-            new SimpleEntry<>("NETWORK_TAB_HEADERS_LABEL", this.textAreaHeader),
             new SimpleEntry<>("NETWORK_TAB_PARAMS_LABEL", this.textAreaRequest),
+            new SimpleEntry<>("NETWORK_TAB_HEADERS_LABEL", this.textAreaHeader),
             new SimpleEntry<>("NETWORK_TAB_RESPONSE_LABEL", this.textAreaResponse),
             new SimpleEntry<>("NETWORK_TAB_SOURCE_LABEL", this.textAreaSource),
             new SimpleEntry<>("NETWORK_TAB_PREVIEW_LABEL", this.textPanePreview)

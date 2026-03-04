@@ -144,7 +144,7 @@ public abstract class AbstractInjectionBit<T extends AbstractCallableBit<T>> {
         // Inform the View if bits array is complete, else nothing #Need fix
         if (asciiCodeBit.matches("^[01]{8}$")) {
             var asciiCode = Integer.parseInt(asciiCodeBit, 2);
-            if (asciiCode == 127 || asciiCode == 0) {  // Stop if many 11111111, 01111111 or 00000000
+            if (asciiCode == 255 || asciiCode == 127 || asciiCode == 0) {  // Stop if many 11111111, 01111111 or 00000000
                 if (countBadAsciiCode.get() > 15) {
                     throw new InjectionFailureException("Boolean false positive, stopping...");
                 }

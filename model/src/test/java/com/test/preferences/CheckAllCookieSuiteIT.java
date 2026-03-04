@@ -1,12 +1,14 @@
-package com.test.insertion;
+package com.test.preferences;
 
 import com.jsql.model.InjectionModel;
 import com.jsql.model.exception.JSqlException;
 import com.jsql.view.subscriber.SubscriberLogger;
 import com.test.engine.mysql.ConcreteMysqlSuiteIT;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junitpioneer.jupiter.RetryingTest;
 
-class EmptyUnionSuiteIT extends ConcreteMysqlSuiteIT {
+class CheckAllCookieSuiteIT extends ConcreteMysqlSuiteIT {
     
     @Override
     public void setupInjection() throws Exception {
@@ -15,10 +17,9 @@ class EmptyUnionSuiteIT extends ConcreteMysqlSuiteIT {
 
         model.subscribe(new SubscriberLogger(model));
 
-        model.getMediatorUtils().parameterUtil().initQueryString(
-            "http://localhost:8080/insertion-char?tenant=mysql&name='"
-        );
-
+        model.getMediatorUtils().parameterUtil().initQueryString("http://localhost:8080/cookie?tenant=mysql");
+        model.getMediatorUtils().parameterUtil().initHeader("Cookie: fake=;name=;fake2=");
+        
         model.setIsScanning(true);
 
         model
@@ -32,8 +33,7 @@ class EmptyUnionSuiteIT extends ConcreteMysqlSuiteIT {
         model
         .getMediatorUtils()
         .connectionUtil()
-        .withMethodInjection(model.getMediatorMethod().getQuery())
-        .withTypeRequest("GET");
+        .withMethodInjection(model.getMediatorMethod().getHeader());
         
         model.beginInjection();
     }
@@ -42,5 +42,13 @@ class EmptyUnionSuiteIT extends ConcreteMysqlSuiteIT {
     @RetryingTest(3)
     public void listDatabases() throws JSqlException {
         super.listDatabases();
+    }
+
+    @AfterEach
+    void afterEach() {
+        Assertions.assertEquals(
+            this.injectionModel.getMediatorStrategy().getUnion(),
+            this.injectionModel.getMediatorStrategy().getStrategy()
+        );
     }
 }

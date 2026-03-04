@@ -28,7 +28,7 @@ class CheckStarJsonParamSuiteIT extends ConcreteMysqlSuiteIT {
                         null,
                         {
                             "a": {
-                                "a": "0'*"
+                                "a": "*"
                             }
                         }
                     ]

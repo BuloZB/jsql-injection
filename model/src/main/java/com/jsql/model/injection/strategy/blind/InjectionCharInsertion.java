@@ -6,7 +6,6 @@ import com.jsql.model.injection.strategy.blind.callable.AbstractCallableBit;
 import com.jsql.model.injection.strategy.blind.callable.CallableCharInsertion;
 import com.jsql.model.injection.strategy.blind.patch.Diff;
 import com.jsql.util.LogLevelUtil;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,13 +34,8 @@ public class InjectionCharInsertion {
      * the TRUE queries.
      */
     private List<Diff> constantTrueMark = new ArrayList<>();
-    
     protected final InjectionModel injectionModel;
-
     private final String prefixSuffix;
-    
-    private static final String PREFIX = "prefix";
-
     private final List<String> falsy;
     
     /**
@@ -62,10 +56,7 @@ public class InjectionCharInsertion {
         }
         
         // Call the SQL request which must be FALSE (usually ?id=-123456879)
-        this.blankFalseMark = this.callUrl(
-            falseCharInsertion,
-            "prefix:" + prefixSuffix.replace(InjectionCharInsertion.PREFIX, StringUtils.EMPTY)
-        );
+        this.blankFalseMark = this.callUrl(falseCharInsertion, "prefix:" + prefixSuffix);
 
         // Concurrent calls to the FALSE statements,
         // it will use inject() from the model
@@ -75,16 +66,12 @@ public class InjectionCharInsertion {
         for (String urlTest: truthy) {
             listCallableTagTrue.add(
                 new CallableCharInsertion(
-                    prefixSuffix
-                    .replace(InjectionCharInsertion.PREFIX, RandomStringUtils.secure().next(10, "345"))
-                    .replace(InjectionModel.STAR,
-                        String.join(
-                            StringUtils.SPACE,
-                            // todo should also work with AND
-                            StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
-                            urlTest
-                        )
-                    ),
+                    prefixSuffix.replace(InjectionModel.STAR, String.join(
+                        StringUtils.SPACE,
+                        // todo should also work with AND
+                        StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
+                        urlTest
+                    )),
                     this,
                     "prefix#true"
                 )
@@ -127,15 +114,11 @@ public class InjectionCharInsertion {
         for (String urlTest: this.falsy) {
             listCallableTagFalse.add(
                 new CallableCharInsertion(
-                    this.prefixSuffix
-                    .replace(InjectionCharInsertion.PREFIX, RandomStringUtils.secure().next(10, "345"))
-                    .replace(InjectionModel.STAR,
-                        String.join(
-                            StringUtils.SPACE,
-                            StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
-                            urlTest
-                        )
-                    ),
+                    this.prefixSuffix.replace(InjectionModel.STAR, String.join(
+                        StringUtils.SPACE,
+                        StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
+                        urlTest
+                    )),
                     this,
                     "prefix#false"
                 )
@@ -168,15 +151,11 @@ public class InjectionCharInsertion {
             throw new StoppedByUserSlidingException();
         }
         var blindTest = new CallableCharInsertion(
-            this.prefixSuffix
-            .replace(InjectionCharInsertion.PREFIX, RandomStringUtils.secure().next(10, "678"))
-            .replace(InjectionModel.STAR,
-                String.join(
-                    StringUtils.SPACE,
-                    StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
-                    this.injectionModel.getMediatorEngine().getEngine().instance().sqlBlindConfirm()
-                )
-            ),
+            this.prefixSuffix.replace(InjectionModel.STAR, String.join(
+                StringUtils.SPACE,
+                StringUtils.SPACE + this.injectionModel.getMediatorEngine().getEngine().instance().getModelYaml().getStrategy().getBinary().getModeOr(),
+                this.injectionModel.getMediatorEngine().getEngine().instance().sqlBlindConfirm()
+            )),
             this,
             "prefix#confirm"
         );
