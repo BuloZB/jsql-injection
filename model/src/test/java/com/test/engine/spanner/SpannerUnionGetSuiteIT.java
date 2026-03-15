@@ -1,4 +1,4 @@
-package com.test.engine.oracle;
+package com.test.engine.spanner;
 
 import com.jsql.model.InjectionModel;
 import com.jsql.model.exception.JSqlException;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junitpioneer.jupiter.RetryingTest;
 
-class OracleTimeGetSuiteIT extends ConcreteOracleSuiteIT {
+class SpannerUnionGetSuiteIT extends ConcreteSpannerSuiteIT {
     
     @Override
     public void setupInjection() throws Exception {
@@ -17,30 +17,46 @@ class OracleTimeGetSuiteIT extends ConcreteOracleSuiteIT {
         model.subscribe(new SubscriberLogger(model));
 
         model.getMediatorUtils().parameterUtil().initQueryString(
-            "http://localhost:8080/time?tenant=oracle&name=1'"
+            "http://localhost:8080/spanner?name="
         );
-        
+
         model.setIsScanning(true);
 
         model
         .getMediatorUtils()
         .preferencesUtil()
-        .withIsCheckingAllURLParam(false)
-        .withIsStrategyBlindBinDisabled(true)
-        .withIsStrategyBlindBitDisabled(true);
-
+        .withIsStrategyBlindBitDisabled(true)
+        .withIsStrategyBlindBinDisabled(true);
+        
         model
         .getMediatorUtils()
         .connectionUtil()
         .withMethodInjection(model.getMediatorMethod().getQuery())
         .withTypeRequest("GET");
 
-        model.getMediatorEngine().setEngineByUser(model.getMediatorEngine().getOracle());
         model.beginInjection();
     }
     
     @Override
-    @RetryingTest(6)
+    @RetryingTest(3)
+    public void listDatabases() throws JSqlException {
+        super.listDatabases();
+    }
+
+    @Override
+    @RetryingTest(3)
+    public void listTables() throws JSqlException {
+        super.listTables();
+    }
+
+    @Override
+    @RetryingTest(3)
+    public void listColumns() throws JSqlException {
+        super.listColumns();
+    }
+
+    @Override
+    @RetryingTest(3)
     public void listValues() throws JSqlException {
         super.listValues();
     }
@@ -48,7 +64,7 @@ class OracleTimeGetSuiteIT extends ConcreteOracleSuiteIT {
     @AfterEach
     void afterEach() {
         Assertions.assertEquals(
-            this.injectionModel.getMediatorStrategy().getTime(),
+            this.injectionModel.getMediatorStrategy().getUnion(),
             this.injectionModel.getMediatorStrategy().getStrategy()
         );
     }

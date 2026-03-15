@@ -1,21 +1,20 @@
 {
     "version": "0.114",
     "news": [
-        "[v0.114] Releasing parameter selection and HTTP request import. Now procrastinating, until bugs wake me. Or users",
-        "[Java] Running v0.114 ? please bump your jdk to at least 21. You did already ? Can you see this message ? Does anyone care ?",
-        "[True story] This tool is for my own purpose, do not use it.",
-        "[DNS strategy] You're a security expert ? Are you joking ? Though give a try to the new DNS strategy, you can test it locally without any domain",
-        "[RCE shell] How can you trigger RCE shell and reverse shell with one click ? For details go to https://github.com/ron190/jsql-injection/wiki/Exploit",
+        "[Iceberg levels] You are at level 0. At best. Can you progress to deeper levels ?",
+        "[Level 0] SQL injection strategies: Time, Blind bin, Blind bit, Multibit, Error, Union (https://github.com/ron190/jsql-injection/wiki/Strategy)",
+        "[Level 1] Remote Code Execution via User Defined Function or Web shell (https://github.com/ron190/jsql-injection/wiki/Exploit)",
+        "[Level 2] Strategy: Dns (https://github.com/ron190/jsql-injection/wiki/Strategy#7-dns--and-callselectbobcom)",
+        "[Level 3] Reverse shell (https://github.com/ron190/jsql-injection/wiki/Reverse-shell)",
+        "[Level ?] Deep... lost... Buffer overflow ? alone... so cold...",
+        "[Contribute?] Create your pull request : many mysql and postgres clones to cover, testing on docker using python and .NET endpoints, or any other topic",
         "[Pinned] Report any bugs and thoughts, add your star at https://github.com/ron190/jsql-injection",
-        "░     ░      ░ ░",
-        "██▓ ▄████▄  ▓█████",
-        "▓██▒▒██▀ ▀█  ▓█   ▀",
-        "▒██▒▒▓█    ▄ ▒███",
-        "░██░▒▓▓▄ ▄██▒▒▓█  ▄",
-        "░██░▒ ▓███▀ ░░▒████▒",
-        "░▓  ░ ░▒ ▒  ░░░ ▒░ ░",
-        "▒ ░  ░  ▒    ░ ░  ░",
-        "▒ ░░           ░",
-        "[Red hot sun daily piercing your skin tanned by yearly summer. Melting in your favorite drink, devastated by your punches and swinging pickaxe]"
+        "",
+        "░   ░░░  ░        ░░      ░░       ░░░      ░░       ░░  ░░░░  ░░      ░░░      ░░        ░░      ░░        ░",
+        "▒    ▒▒  ▒  ▒▒▒▒▒▒▒  ▒▒▒▒  ▒  ▒▒▒▒  ▒  ▒▒▒▒  ▒  ▒▒▒▒  ▒  ▒▒▒▒  ▒  ▒▒▒▒  ▒  ▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒  ▒▒▒▒",
+        "▓  ▓  ▓  ▓      ▓▓▓  ▓▓▓▓▓▓▓       ▓▓  ▓▓▓▓  ▓       ▓▓        ▓  ▓▓▓▓  ▓  ▓▓▓   ▓▓▓▓  ▓▓▓▓▓      ▓▓▓▓▓  ▓▓▓▓",
+        "█  ██    █  ███████  ████  █  ███  ██  ████  █  ███████  ████  █        █  ████  ████  ██████████  ████  ████",
+        "█  ███   █        ██      ██  ████  ██      ██  ███████  ████  █  ████  ██      ██        ██      █████  ████",
+        "[Subtle music starts flowing and rolling to your ears, light and soft classical arrangements. Also free ad. No, you can't put car ads here]"
     ]
 }
