@@ -36,80 +36,103 @@ public class JdbcRestController {
 
     @RequestMapping("/access")  // local testing, not used
     public Greeting greetingAccess(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         ClassLoader classLoader = this.getClass().getClassLoader();
         File file = new File(Objects.requireNonNull(classLoader.getResource("access.accdb")).getFile());
         return this.getGreeting(
             SpringApp.get("access").getProperty(JdbcSettings.JAKARTA_JDBC_URL) + file.getAbsolutePath(),
             SpringApp.get("access").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("access").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select qsd from Table1 where '1' = '" + inject + "'"
+            "select qsd from Table1 where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/clickhouse")
     public Greeting greetingClickhouse(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("clickhouse").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("clickhouse").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("clickhouse").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from information_schema.schemata where '1' = '" + inject + "'"
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
+        );
+    }
+
+    @RequestMapping("/cockroachdb")
+    public Greeting greetingCockroachdb(@RequestParam(value="name") String name) {
+        return this.getGreeting(
+            SpringApp.get("cockroachdb").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
+            SpringApp.get("cockroachdb").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
+            SpringApp.get("cockroachdb").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/duckdb")
     public Greeting greetingDuckdb(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("duckdb").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("duckdb").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("duckdb").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from information_schema.schemata where '1' = '" + inject + "'"
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
+        );
+    }
+
+    @RequestMapping("/dameng")
+    public Greeting greetingDameng(@RequestParam(value="name") String name) {
+        return this.getGreeting(
+            SpringApp.get("dameng").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
+            SpringApp.get("dameng").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
+            SpringApp.get("dameng").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
+            "select owner from all_tables where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/exasol")
     public Greeting greetingExasol(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("exasol").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("exasol").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("exasol").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select COLUMN_SCHEMA from EXA_SYS_COLUMNS where '1' = '" + inject + "'"
+            "select COLUMN_SCHEMA from EXA_SYS_COLUMNS where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/hana")
     public Greeting greetingHana(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("hana").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("hana").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("hana").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from sys.schemas where '1' = '" + inject + "'"
+            "select schema_name from sys.schemas where '1' = '" + name + "'"
+        );
+    }
+
+    @RequestMapping("/greenplum")
+    public Greeting greetingGreenplum(@RequestParam(value="name") String name) {
+        return this.getGreeting(
+            SpringApp.get("greenplum").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
+            SpringApp.get("greenplum").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
+            SpringApp.get("greenplum").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
+            "SELECT table_schema FROM information_schema.tables where '1' = '"+ name +"'"
         );
     }
 
     @RequestMapping("/mariadb")
-    public Greeting greetingMariadb(@RequestParam(value="name") String name) throws ClassNotFoundException {
-        String inject = name.replace(":", "\\:");
+    public Greeting greetingMariadb(@RequestParam(value="name") String name) {
         return this.getGreeting(
             SpringApp.get("mariadb").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("mariadb").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("mariadb").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from information_schema.schemata where '1' = '" + inject + "'"
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/mckoi")  // no dialect
     public Greeting greetingMckoi(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("mckoi").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("mckoi").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("mckoi").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select name from SYS_INFO.sUSRSchemaInfo where 1 = "+ inject
+            "select name from SYS_INFO.sUSRSchemaInfo where 1 = "+ name
         );
     }
 
@@ -117,23 +140,21 @@ public class JdbcRestController {
     @RequestMapping("/mimer")  // MimerSQLDialect not working: SQLGrammarException Could not prepare statement, Sequence does not exist, or no privilege
     public Greeting greetingMimerSQL(@RequestParam(value="name") String name) throws ClassNotFoundException {
         Class.forName("com.mimer.jdbc.Driver");  // required
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("mimer").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("mimer").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("mimer").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select table_name from information_schema.tables where '1' = '"+ inject +"'"
+            "select table_name from information_schema.tables where '1' = '"+ name +"'"
         );
     }
 
     @RequestMapping("/monetdb")
     public Greeting greetingMonetDB(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("monetdb").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("monetdb").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("monetdb").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select name from schemas where '1' = '"+ inject +"'"
+            "select name from schemas where '1' = '"+ name +"'"
         );
     }
 
@@ -157,50 +178,66 @@ public class JdbcRestController {
         return greeting;
     }
 
+    @RequestMapping("/percona")
+    public Greeting greetingPercona(@RequestParam(value="name") String name) {
+        return this.getGreeting(
+            SpringApp.get("percona").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
+            SpringApp.get("percona").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
+            SpringApp.get("percona").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
+        );
+    }
+
     @RequestMapping("/presto")
     public Greeting greetingPresto(@RequestParam(value="name") String name) throws ClassNotFoundException {
         Class.forName("com.facebook.presto.jdbc.PrestoDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("presto").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("presto").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("presto").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ inject +"'"
+            "select schema_name from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ name +"'"
         );
     }
 
     @RequestMapping("/spanner")
     public Greeting greetingSpanner(@RequestParam(value="name") String name) throws ClassNotFoundException {
         Class.forName("com.google.cloud.spanner.jdbc.JdbcDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("spanner").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             null,
             null,
-            "select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ inject +"'"
+            "select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ name +"'"
+        );
+    }
+
+    @RequestMapping("/tidb")
+    public Greeting greetingTidb(@RequestParam(value="name") String name) {
+        return this.getGreeting(
+            SpringApp.get("tidb").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
+            SpringApp.get("tidb").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
+            SpringApp.get("tidb").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
+            "select schema_name from information_schema.schemata where '1' = '" + name + "'"
         );
     }
 
     @RequestMapping("/vertica")
     public Greeting greetingVertica(@RequestParam(value="name") String name) {
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("vertica").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("vertica").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("vertica").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select table_schema from v_catalog.system_tables where 1 = "+ inject
+            "select table_schema from v_catalog.system_tables where 1 = "+ name
         );
     }
 
     @RequestMapping("/virtuoso")
     public Greeting greetingVirtuoso(@RequestParam(value="name") String name) throws ClassNotFoundException {
         Class.forName("virtuoso.jdbc3.Driver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             SpringApp.get("virtuoso").getProperty(JdbcSettings.JAKARTA_JDBC_URL),
             SpringApp.get("virtuoso").getProperty(JdbcSettings.JAKARTA_JDBC_USER),
             SpringApp.get("virtuoso").getProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD),
-            "select schema_name from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ inject +"'"
+            "select schema_name from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ name +"'"
         );
     }
 
@@ -215,12 +252,11 @@ public class JdbcRestController {
         // jdbc:ctree://localhost:6597/ctreeSQL
         // ADMIN ADMIN
         Class.forName("ctree.jdbc.ctreeDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             "jdbc:ctree://localhost:6597/ctreeSQL",
             "ADMIN",
             "ADMIN",
-            "select tbl from systables where '1' = '"+ inject +"'"
+            "select tbl from systables where '1' = '"+ name +"'"
         );
     }
     
@@ -231,12 +267,11 @@ public class JdbcRestController {
         // jdbc:ignite:thin://127.0.0.1
         // ignite ignite
         Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             "jdbc:ignite:thin://127.0.0.1",
             "ignite",
             "ignite",
-            "select 'name' from PUBLIC.STUDENT where '1' = '"+ inject +"'"
+            "select 'name' from PUBLIC.STUDENT where '1' = '"+ name +"'"
         );
     }
     
@@ -256,12 +291,11 @@ public class JdbcRestController {
         //  jdbc:FrontBase://127.0.0.1/firstdb
         //  _system
         Class.forName("com.frontbase.jdbc.FBJDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             "jdbc:FrontBase://127.0.0.1/firstdb",
             "_system",
             StringUtils.EMPTY,
-            "select \"SCHEMA_NAME\" from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ inject +"'"
+            "select \"SCHEMA_NAME\" from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ name +"'"
         );
     }
     
@@ -277,12 +311,11 @@ public class JdbcRestController {
         // jdbc:IRIS://127.0.0.1:1972/USER
         // _SYSTEM Mw7SUqLPFbZWUu4
         Class.forName("com.intersystems.jdbc.IRISDriver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             "jdbc:IRIS://127.0.0.1:1972/USER",
             "_SYSTEM",
             "Mw7SUqLPFbZWUu4",
-            "select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ inject +"'"
+            "select SCHEMA_NAME from INFORMATION_SCHEMA.SCHEMATA where '1' = '"+ name +"'"
         );
     }
 
@@ -295,12 +328,11 @@ public class JdbcRestController {
         // admin password
         // no docker, custom dialect
         Class.forName("org.netezza.Driver");
-        String inject = name.replace(":", "\\:");
         return this.getGreeting(
             "jdbc:netezza://127.0.0.1:5480/SYSTEM",
             "admin",
             "password",
-            "select schema_name from schemata where '1' = '"+ inject +"'"
+            "select schema_name from schemata where '1' = '"+ name +"'"
         );
     }
 
@@ -331,12 +363,11 @@ public class JdbcRestController {
     @RequestMapping("/mysql")  // local testing, not used
     public Greeting greetingMysql(@RequestParam(value="name") String name) {
         Greeting greeting;
-        String inject = name.replace(":", "\\:");
         StringBuilder result = new StringBuilder();
 
         try (
             Connection con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/?allowMultiQueries=true", "test193746285", "~Aa1");
-            PreparedStatement pstmt = con.prepareStatement("select TABLE_SCHEMA from INFORMATION_SCHEMA.tables where TABLE_SCHEMA='"+ inject +"'")
+            PreparedStatement pstmt = con.prepareStatement("select TABLE_SCHEMA from INFORMATION_SCHEMA.tables where TABLE_SCHEMA='"+ name +"'")
         ) {
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()) {

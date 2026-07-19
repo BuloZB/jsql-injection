@@ -54,7 +54,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -430,13 +429,7 @@ public class AppUiTest {
         AppUiTest.window.robot().moveMouse(GuiActionRunner.execute(() -> AppUiTest.window.menuItem("Hash").target()));
 
         ActionCoder.getHashes().forEach(hash -> {
-            String result = null;
-            try {
-                result = ActionCoder.forName(hash).orElseThrow().run("a");
-            } catch (NoSuchAlgorithmException | NoSuchElementException | IOException e) {
-                Assertions.fail();
-            }
-
+            String result = Assertions.assertDoesNotThrow(() -> ActionCoder.forName(hash).orElseThrow().run("a"));
             AppUiTest.window.robot().moveMouse(GuiActionRunner.execute(() -> AppUiTest.window.menuItem("hashTo"+ hash).target()));
             AppUiTest.window.textBox(ManagerCoder.RESULT_MANAGER_CODER).requireText(result);
         });

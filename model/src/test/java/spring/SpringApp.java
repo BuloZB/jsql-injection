@@ -212,7 +212,7 @@ public class SpringApp {
 
     public static Stream<Properties> getPropertiesFilterByProfile() {
         return SpringApp.propertiesByEngine.parallelStream().filter(propertyByEngine ->
-            System.getProperty(SpringApp.TEST_PROFILE).equals(propertyByEngine.getProperty(SpringApp.TEST_PROFILE))
+            System.getProperty(SpringApp.TEST_PROFILE, "UNDEFINED_PROFILE").equals(propertyByEngine.getProperty(SpringApp.TEST_PROFILE))
             || SpringApp.TENANT_H2.equals(propertyByEngine.getProperty(SpringApp.TENANT))
         );
     }

@@ -294,7 +294,7 @@ public class SuspendableGetCharInsertion extends AbstractSuspendable {
 
             LOGGER.log(
                 LogLevelUtil.CONSOLE_SUCCESS,
-                "Found [{}] using boolean match",
+                "Found prefix [{}] using boolean match",
                 () -> SuspendableGetCharInsertion.format(characterInsertionFoundOrByUser[0])
             );
             return true;

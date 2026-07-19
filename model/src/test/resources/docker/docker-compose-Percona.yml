@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+
+  percona:
+    container_name: jsql-percona
+    ports:
+      - "3311:3311"
+    build:
+      context: .
+      dockerfile: Dockerfile.percona
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    networks:
+      - jsql-network
+
+networks:
+  jsql-network:

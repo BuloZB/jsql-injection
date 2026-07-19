@@ -1,0 +1,12 @@
+engine: Percona
+clone: mysql.yml
+
+strategy:
+ configuration:
+  fingerprint:
+   errorMessage:
+    - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.*' at line \\d+
+    - percona
+   orderByErrorMessage:
+    - Unknown column '1337' in 'order clause'
+   engineSpecific: if(${test} and instr(@@version_comment, 'percona') > 0 and instr(lower(version()), 'tidb') = 0, binary('a'), 'b')=binary('a')

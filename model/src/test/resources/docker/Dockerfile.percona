@@ -1,0 +1,4 @@
+FROM percona
+RUN echo "[mysqld]" > /etc/my.cnf
+RUN echo "port=3311" >> /etc/my.cnf
+EXPOSE 3311

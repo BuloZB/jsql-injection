@@ -260,21 +260,18 @@ strategy:
    errorMessage:
     # Spring
     - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.*' at line \\d+
-    - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '.*' at line \\d+
     - Unknown column '.*' in 'where clause'
     # Other
     - clustrix
     - drizzle
-    - mariadb
     - memsql
     - mysql
-    - percona
-    - tidb
    orderByErrorMessage:
     - Unknown column '1337' in 'order clause'
    # binary() disambiguation: if() introduced to sqlite in v3.48.0.0
    # any_value() disambiguation from mariadb but not available on mysql 5
-   engineSpecific: if(${test}, binary('a'), 'b')=binary('a')
+   # lower(version()) because collation makes wrong check otherwise
+   engineSpecific: if(${test} and instr(@@version_comment, 'mysql') > 0 and instr(lower(version()), 'tidb') = 0, binary('a'), 'b')=binary('a')
 
  union:
   indices: union select ${indices}

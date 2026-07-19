@@ -48,7 +48,7 @@ public class SuspendableGetEngine extends AbstractSuspendable {
                         throw new StoppedByUserSlidingException();
                     }
 
-                    LOGGER.log(LogLevelUtil.CONSOLE_SUCCESS, "Found [{}] using boolean match", engine);
+                    LOGGER.log(LogLevelUtil.CONSOLE_SUCCESS, "Found database [{}] using boolean match", engine);
                     this.injectionModel.getMediatorEngine().setEngine(engine);
                     isEngineFound.set(true);
 

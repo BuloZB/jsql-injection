@@ -1,0 +1,18 @@
+engine: Greenplum
+clone: postgres.yml
+
+strategy:
+  configuration:
+    fingerprint:
+      errorMessage:
+        - "(?<!postgres.*)ERROR: unterminated quoted identifier at or near"
+      # sum and gp_dist_random to prevent collision with postgres
+      # generate_series to prevent collision with vertica
+      # ilike to prevent collision with exasol
+      engineSpecific: |
+        'a' = case when 
+          (select sum(0)) != (select 1 from generate_series(1,1)) 
+          and 1 = (SELECT 1 FROM gp_dist_random('gp_id') limit 1)
+          and '' ilike '' 
+          and ${test} 
+        then 'a' else '' end

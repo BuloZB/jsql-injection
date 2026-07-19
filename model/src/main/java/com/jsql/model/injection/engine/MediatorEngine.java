@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -42,12 +43,15 @@ public class MediatorEngine {
     private final Engine access;
     private final Engine altibase;
     private final Engine clickhouse;
+    private final Engine cockroachdb;
     private final Engine cubrid;
+    private final Engine dameng;
     private final Engine db2;
     private final Engine derby;
     private final Engine duckdb;
     private final Engine exasol;
     private final Engine firebird;
+    private final Engine greenplum;
     private final Engine h2;
     private final Engine hana;
     private final Engine hsqldb;
@@ -59,12 +63,14 @@ public class MediatorEngine {
     private final Engine mysql;
     private final Engine neo4j;
     private final Engine oracle;
+    private final Engine percona;
     private final Engine postgres;
     private final Engine presto;
     private final Engine spanner;
     private final Engine sqlite;
     private final Engine sqlserver;
     private final Engine sybase;
+    private final Engine tidb;
     private final Engine vertica;
     private final Engine virtuoso;
 
@@ -90,11 +96,14 @@ public class MediatorEngine {
         this.altibase = new Engine(new EngineYaml("altibase.yml", injectionModel));
         this.cubrid = new Engine(new EngineYaml("cubrid.yml", injectionModel));
         this.clickhouse = new Engine(new EngineYaml("clickhouse.yml", injectionModel));
+        this.cockroachdb = new Engine(new EngineYaml("cockroachdb.yml", injectionModel));
+        this.dameng = new Engine(new EngineYaml("dameng.yml", injectionModel));
         this.db2 = new Engine(new EngineYaml("db2.yml", injectionModel));
         this.derby = new Engine(new EngineYaml("derby.yml", injectionModel));
         this.duckdb = new Engine(new EngineYaml("duckdb.yml", injectionModel));
         this.exasol = new Engine(new EngineYaml("exasol.yml", injectionModel));
         this.firebird = new Engine(new EngineYaml("firebird.yml", injectionModel));
+        this.greenplum = new Engine(new EngineYaml("greenplum.yml", injectionModel));
         this.h2 = new Engine(new EngineYaml("h2.yml", injectionModel));
         this.hana = new Engine(new EngineYaml("hana.yml", injectionModel));
         this.hsqldb = new Engine(new EngineYaml("hsqldb.yml", injectionModel));
@@ -106,19 +115,20 @@ public class MediatorEngine {
         this.mysql = new Engine(new EngineYaml("mysql.yml", injectionModel));
         this.neo4j = new Engine(new EngineYaml("neo4j.yml", injectionModel));
         this.oracle = new Engine(new EngineYaml("oracle.yml", injectionModel));
+        this.percona = new Engine(new EngineYaml("percona.yml", injectionModel));
         this.postgres = new Engine(new EngineYaml("postgres.yml", injectionModel));
         this.presto = new Engine(new EngineYaml("presto.yml", injectionModel));
         this.spanner = new Engine(new EngineYaml("spanner.yml", injectionModel));
         this.sqlite = new Engine(new EngineYaml("sqlite.yml", injectionModel)) {
             @Override
-            public String transformSqlite(String resultToParse) {
+            public String transform(String resultToParse) {
                 var resultSqlite = new StringBuilder();
 
                 String resultTmp = resultToParse
                     .replaceFirst("[^(]+\\(", StringUtils.EMPTY)
                     .trim()
-                    .replaceAll("\\)$", StringUtils.EMPTY);
-                resultTmp = resultTmp.replaceAll("\\([^)]+\\)", StringUtils.EMPTY);
+                    .replaceAll("\\)$", StringUtils.EMPTY)
+                    .replaceAll("\\([^)]+\\)", StringUtils.EMPTY);
 
                 for (String columnNameAndType: resultTmp.split(",")) {
                     if (columnNameAndType.trim().startsWith("primary key")) {
@@ -141,28 +151,25 @@ public class MediatorEngine {
         };
         this.sqlserver = new Engine(new EngineYaml("sqlserver.yml", injectionModel));
         this.sybase = new Engine(new EngineYaml("sybase.yml", injectionModel));
+        this.tidb = new Engine(new EngineYaml("tidb.yml", injectionModel));
         this.vertica = new Engine(new EngineYaml("vertica.yml", injectionModel));
         this.virtuoso = new Engine(new EngineYaml("virtuoso.yml", injectionModel));
 
         this.engines = Arrays.asList(
-            this.auto, this.access, this.altibase, ctreeace, this.clickhouse, this.cubrid, this.db2, this.derby, this.duckdb, this.exasol, this.firebird,
-            frontbase, this.h2, this.hana, this.hsqldb, this.informix, ingres, iris, maxdb, this.mariadb, this.mckoi, this.mimer, this.monetdb,
-            this.mysql, this.neo4j, netezza, nuodb, this.oracle, this.postgres, this.presto, this.spanner, this.sqlite, this.sqlserver,
-            this.sybase, teradata, this.vertica, this.virtuoso
+            this.auto, this.access, this.altibase, ctreeace, this.clickhouse, this.cockroachdb, this.cubrid, this.dameng, this.db2, this.derby, this.duckdb,
+            this.exasol, this.firebird, frontbase, this.greenplum, this.h2, this.hana, this.hsqldb, this.informix, ingres, iris, maxdb, this.mariadb, this.mckoi,
+            this.mimer, this.monetdb, this.mysql, this.neo4j, netezza, nuodb, this.oracle, this.percona, this.postgres, this.presto, this.spanner, this.sqlite,
+            this.sqlserver, this.sybase, this.tidb, teradata, this.vertica, this.virtuoso
         );
         this.enginesForFingerprint = Arrays.asList(  // Add sortIndex
-            this.mariadb, this.mysql, this.postgres, this.sqlite, this.h2, this.hsqldb, this.oracle, this.sqlserver, this.spanner, this.duckdb,
+            this.mysql, this.postgres, this.sqlite, this.h2, this.hsqldb, this.oracle, this.sqlserver, this.mariadb, this.spanner, this.duckdb,
             this.altibase, ctreeace, this.cubrid, this.db2, this.derby, this.exasol, this.firebird, frontbase, this.hana, this.informix, ingres,
             iris, maxdb, this.mckoi, this.mimer, this.monetdb, this.neo4j, netezza, nuodb, this.presto, this.sybase, teradata, this.vertica,
-            this.virtuoso, this.clickhouse, this.access
+            this.virtuoso, this.clickhouse, this.access, this.dameng, this.cockroachdb, this.greenplum, this.percona, this.tidb
         );
 
         this.engine = this.mysql;
         this.engineByUser = this.auto;
-    }
-    
-    public boolean isSqlite() {
-        return this.getEngine() == this.getSqlite();
     }
     
     public Engine fingerprintEngine() {
@@ -176,7 +183,7 @@ public class MediatorEngine {
                 () -> this.injectionModel.getMediatorEngine().getEngineByUser()
             );
         } else {
-            LOGGER.log(LogLevelUtil.CONSOLE_DEFAULT, "[Step 1] Fingerprinting database...");
+            LOGGER.log(LogLevelUtil.CONSOLE_DEFAULT, "[Step 1] Fingerprinting database using raw fingerprinting...");
             var insertionCharacter = URLEncoder.encode("'\"#-)'\"*", StandardCharsets.UTF_8);
             String pageSource = this.injectionModel.injectWithoutIndex(insertionCharacter, "test#engine");
                 
@@ -192,7 +199,7 @@ public class MediatorEngine {
                     engineFound = engineTest;
                     LOGGER.log(
                         LogLevelUtil.CONSOLE_SUCCESS,
-                        "Found [{}] using raw fingerprinting",
+                        "Found database [{}] using raw fingerprinting",
                         () -> engineTest
                     );
                     break;
@@ -213,7 +220,7 @@ public class MediatorEngine {
         this.injectionModel.appendAnalysisReport(
             String.join(
                 StringUtils.EMPTY,
-                "# Date: ", LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                "# Date: ", LocalDate.now(Clock.systemUTC()).format(DateTimeFormatter.ISO_LOCAL_DATE),
                 "<br>&#10;# Tested on: ", SystemUtils.OS_NAME, " (", SystemUtils.OS_VERSION, ")",
                 "<br>&#10;# Tool: ", StringUtil.APP_NAME, " v", this.injectionModel.getPropertiesUtil().getVersionJsql(),
                 " (<a href=", urlGitHub, ">", urlGitHub, "</a>)",
@@ -273,8 +280,16 @@ public class MediatorEngine {
         return this.clickhouse;
     }
 
+    public Engine getCockroachdb() {
+        return this.cockroachdb;
+    }
+
     public Engine getCubrid() {
         return this.cubrid;
+    }
+
+    public Engine getDameng() {
+        return this.dameng;
     }
 
     public Engine getDb2() {
@@ -295,6 +310,10 @@ public class MediatorEngine {
 
     public Engine getFirebird() {
         return this.firebird;
+    }
+
+    public Engine getGreenplum() {
+        return this.greenplum;
     }
 
     public Engine getH2() {
@@ -341,6 +360,10 @@ public class MediatorEngine {
         return this.oracle;
     }
 
+    public Engine getPercona() {
+        return this.percona;
+    }
+
     public Engine getPostgres() {
         return this.postgres;
     }
@@ -363,6 +386,10 @@ public class MediatorEngine {
 
     public Engine getSybase() {
         return this.sybase;
+    }
+
+    public Engine getTidb() {
+        return this.tidb;
     }
 
     public Engine getVertica() {

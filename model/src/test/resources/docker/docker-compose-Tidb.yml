@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+
+  tidb:
+    container_name: jsql-tidb
+    image: pingcap/tidb
+    privileged: true
+    ports:
+      - "4000:4000"
+    networks:
+      - jsql-network
+
+networks:
+  jsql-network:

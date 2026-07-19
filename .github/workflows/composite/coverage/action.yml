@@ -26,10 +26,18 @@ runs:
       shell: bash
       env:
         CODECOV_TOKEN: ${{ inputs.CODECOV_TOKEN }}
-      run: cd shared-resources && bash <(curl -s https://codecov.io/bash) || true
+        EXPECTED_HASH: "f0e7a3ee76a787c37aa400cf44aee0c9b473b2fa79092edfb36d1faa853bbe23"
+      run: |
+        curl --proto "=https" --tlsv1.2 -sL https://codecov.io/bash -o /tmp/install.sh
+        echo "$EXPECTED_HASH /tmp/install.sh" | sha256sum --check --status || { echo "Hash verification failed"; exit 1; }
+        bash /tmp/install.sh || true
 
     - name: Codacy scan
       shell: bash
       env:
         CODACY_PROJECT_TOKEN: ${{ inputs.CODACY_PROJECT_TOKEN }}
-      run: cd shared-resources && bash <(curl -Ls https://coverage.codacy.com/get.sh) || true
+        EXPECTED_HASH: "f7fbb3417019d0f73f50426c78cbcd59ed0d57d3c43b25096d0f600ce579cf69"
+      run: |
+        curl --proto "=https" --tlsv1.2 -sL https://coverage.codacy.com/get.sh -o /tmp/install.sh
+        echo "$EXPECTED_HASH /tmp/install.sh" | sha256sum --check --status || { echo "Hash verification failed"; exit 1; }
+        bash /tmp/install.sh || true

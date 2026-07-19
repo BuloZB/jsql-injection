@@ -83,7 +83,7 @@ public class ParameterUtil {
         String rawHeader,
         AbstractMethodInjection methodInjection,
         String typeRequest,
-        boolean isScanning
+        boolean isScanning  // todo should be managed at parent level
     ) {
         try {
             String urlQueryFixed = urlQuery;
@@ -112,6 +112,16 @@ public class ParameterUtil {
                 LOGGER.log(LogLevelUtil.CONSOLE_INFORM, "Punycode domain detected, using [{}] instead of [{}]", authorityPunycode, authority);
                 urlQueryFixed = urlQueryFixed.replace(authority, authorityPunycode);
             }
+            if (
+                this.injectionModel.getMediatorUtils().preferencesUtil().isProcessingCsrf()
+                && this.injectionModel.getMediatorUtils().preferencesUtil().isCsrfUserTag()
+                && (
+                    StringUtils.isBlank(this.injectionModel.getMediatorUtils().preferencesUtil().csrfUserTag())
+                    || StringUtils.isBlank(this.injectionModel.getMediatorUtils().preferencesUtil().csrfUserTagOutput())
+                )
+            ) {
+                throw new IllegalArgumentException("undefined input or output custom CSRF token");
+            }
 
             this.initQueryString(urlQueryFixed, selectionCommand);
             this.initRequest(rawRequest, selectionCommand);
@@ -119,14 +129,15 @@ public class ParameterUtil {
 
             this.injectionModel.getMediatorUtils().connectionUtil().withMethodInjection(methodInjection);
             this.injectionModel.getMediatorUtils().connectionUtil().withTypeRequest(typeRequest);
-            
-            if (isScanning) {
+
+            this.injectionModel.setIsInjectingWithoutScan(!isScanning);
+            if (isScanning) {  // TODO should manage thread at same level for scan and non-scan
                 this.injectionModel.beginInjection();
             } else {
                 new Thread(this.injectionModel::beginInjection, "ThreadBeginInjection").start();  // in thread
             }
         } catch (IllegalArgumentException | MalformedURLException | URISyntaxException e) {
-            LOGGER.log(LogLevelUtil.CONSOLE_ERROR, "Incorrect Url: {}", e.getMessage());
+            LOGGER.log(LogLevelUtil.CONSOLE_ERROR, "Incorrect URL or setting: {}", e.getMessage());
             
             // Incorrect URL, reset the start button
             this.injectionModel.sendToViews(new Seal.EndPreparation());

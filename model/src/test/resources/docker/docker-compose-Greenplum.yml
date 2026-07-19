@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+
+  greenplum:
+    container_name: jsql-greenplum
+    image: datagrip/greenplum:6.8
+    ports:
+      - "5434:5434"
+    networks:
+      - jsql-network
+
+networks:
+  jsql-network:

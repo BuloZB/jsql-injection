@@ -124,8 +124,6 @@ public class SuspendableGetRows extends AbstractSuspendable {
                 slidingWindowAllRows.append(slidingWindowCurrentRow);
                 
                 if (isMultipleRows) {
-                    this.scrap(slidingWindowAllRows);
-                    this.scrap(slidingWindowCurrentRow);
                     this.appendRowFixed(slidingWindowAllRows, slidingWindowCurrentRow);
 
                     countAllRows = this.getCountRows(slidingWindowAllRows);
@@ -193,13 +191,6 @@ public class SuspendableGetRows extends AbstractSuspendable {
         )
         .matcher(slidingWindowCurrentRow);
         
-        var regexRowIncomplete = Pattern.compile(
-            MODE
-            + ENCLOSE_VALUE_RGX
-            + "[^\\x01-\\x03\\x05-\\x09\\x0B-\\x0C\\x0E-\\x1F]+?$"
-        )
-        .matcher(slidingWindowCurrentRow);
-
         // If there is more than 1 row, delete the last incomplete one in order to restart properly from it at the next loop,
         // else if there is 1 row but incomplete, mark it as cut with the letter c
         if (regexAtLeastOneRow.find()) {
@@ -215,9 +206,6 @@ public class SuspendableGetRows extends AbstractSuspendable {
                 .replaceAll(StringUtils.EMPTY)
             );
             LOGGER.log(LogLevelUtil.CONSOLE_INFORM, "Chunk unreliable, reloading row part...");
-        } else if (regexRowIncomplete.find()) {
-            slidingWindowAllRows.append(StringUtil.hexstr("05")).append("1").append(StringUtil.hexstr("0804"));
-            LOGGER.log(LogLevelUtil.CONSOLE_INFORM, "Chunk unreliable, keeping row parts only");
         }
     }
 
@@ -345,27 +333,6 @@ public class SuspendableGetRows extends AbstractSuspendable {
             // Fix #1905 : NullPointerException on injectionStrategy.inject()
             throw new InjectionFailureException("Undefined strategy");
         }
-    }
-
-    private void scrap(StringBuilder slidingWindowAllRows) {
-        // Remove everything not properly attached to the last row:
-        // 1. very start of a new row: XXXXX\4[\6\4]$
-        // 2. very end of the last row: XXXXX[\500]$
-        var allRowsLimit = slidingWindowAllRows.toString();
-        slidingWindowAllRows.setLength(0);
-        slidingWindowAllRows.append(
-            Pattern.compile(
-                String.format(
-                    "%s(%s%s|%s\\d*)$",
-                    MODE,
-                    SEPARATOR_CELL_RGX,
-                    ENCLOSE_VALUE_RGX,
-                    SEPARATOR_QTE_RGX
-                )
-            )
-            .matcher(allRowsLimit)
-            .replaceAll(StringUtils.EMPTY)
-        );
     }
 
     private void sendProgress(int numberToFind, int countProgress, AbstractElementDatabase searchName) {

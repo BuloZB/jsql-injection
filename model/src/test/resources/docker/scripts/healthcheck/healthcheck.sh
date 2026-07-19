@@ -14,9 +14,22 @@ function main {
       waiter Mysql  # last as slow
     ;;
 
+    Greenplum)
+      waiter "$1"
+      sleep 80  # setup, should not be hardcoded
+      # should be in Dockerfile or docker-compose when db is up
+      cat <<EOF | docker exec -i --user gpadmin jsql-greenplum /bin/bash
+        source /opt/greenplum-db-6.8.1/greenplum_path.sh
+        export MASTER_DATA_DIRECTORY=/data/master/gpsne-1/
+        /opt/greenplum-db-6.8.1/bin/gpstop -a
+        sed -i 's/5432/5434/' /data/master/gpsne-1/postgresql.conf
+        /opt/greenplum-db-6.8.1/bin/gpstart -a
+EOF
+      waiter Greenplum5434
+    ;;
+
     Db2)
       waiter "$1"
-
       # should be in Dockerfile or docker-compose when db is up
       cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin --user db2inst1 jsql-db2 /bin/bash
         . /database/config/db2inst1/sqllib/db2profile
@@ -30,7 +43,7 @@ EOF
 
     Hana)
       echo Setup, sleeping 120s...
-      sleep 120  # hana setup
+      sleep 120  # setup, should not be hardcoded
       waiter "$1"
       echo Starting post start phase, creating tenant database, sleeping 300s...
       sleep 300  # end of startup after getting result
@@ -89,9 +102,24 @@ function Clickhouse {  # shellcheck disable=SC2317
   docker exec -i jsql-clickhouse clickhouse-client -u dba --password dba -q "select 'jsqlValue' as jsqlColumn"
 }  # correct status 1 on error
 
+function Cockroachdb {  # shellcheck disable=SC2317
+  cat <<EOF | docker exec -i jsql-cockroachdb cockroach sql --url="postgresql://root@127.0.0.1:26257/defaultdb" --insecure
+    select 'jsqlValue' as jsqlColumn;
+EOF
+}  # correct status 1 on error
+
 function Cubrid {  # shellcheck disable=SC2317
   docker exec -i jsql-cubrid csql demodb -c "select 'jsqlValue' as jsqlColumn"
 }  # correct status 1 on error
+
+function Dameng {  # shellcheck disable=SC2317
+  cat <<EOF | docker exec -i jsql-dameng /bin/bash
+    cd /opt/dmdbms/bin/
+    ./disql SYSDBA/SYSDBA001 <<EOF2
+      select 'jsqlValue' as jsqlColumn;
+EOF2
+EOF
+}  # no status 1 on error
 
 function Db2 {  # shellcheck disable=SC2317
   cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin --user db2inst1 jsql-db2 /bin/bash
@@ -112,6 +140,23 @@ function Firebird {  # shellcheck disable=SC2317
   cat <<EOF | docker exec -i jsql-firebird /usr/local/firebird/bin/isql
     CONNECT /firebird/data/EMPLOYEE.FDB;
     select 'jsqlValue' as jsqlColumn from rdb\$database;
+EOF
+}  # correct status 1 on error
+
+function Greenplum {  # shellcheck disable=SC2317
+  cat <<EOF | docker exec -i --user gpadmin jsql-greenplum /bin/bash
+    source /opt/greenplum-db-6.8.1/greenplum_path.sh
+    export MASTER_DATA_DIRECTORY=/data/master/gpsne-1/
+    /opt/greenplum-db-6.8.1/bin/psql -p 5432 -U gpadmin -d postgres -c "select 'jsqlValue' as jsqlColumn"
+EOF
+}  # correct status 1 on error
+
+function Greenplum5434 {  # shellcheck disable=SC2317
+  cat <<EOF | docker exec -i --user gpadmin jsql-greenplum /bin/bash
+    source /opt/greenplum-db-6.8.1/greenplum_path.sh
+    export MASTER_DATA_DIRECTORY=/data/master/gpsne-1/
+    # force tcp connection matching pg_hba.conf
+    /opt/greenplum-db-6.8.1/bin/psql -h jsql-greenplum -p 5434 -U tester -d testdb -c "select 'jsqlValue' as jsqlColumn"
 EOF
 }  # correct status 1 on error
 
@@ -191,6 +236,10 @@ function Oracle {  # shellcheck disable=SC2317
 EOF
 }  # no status 1 on error
 
+function Percona {  # shellcheck disable=SC2317
+  docker exec -i jsql-percona mysql -uroot -pmy-secret-pw -e "select 'jsqlValue' as jsqlColumn"
+}  # correct status 1 on error
+
 function Postgres {  # shellcheck disable=SC2317
   docker exec -i jsql-postgres psql -h "localhost" -p 5432 -U postgres -c "select 'jsqlValue' as jsqlColumn"
 }  # correct status 1 on error
@@ -200,7 +249,7 @@ function Presto {  # shellcheck disable=SC2317
 }  # correct status 1 on error
 
 function Spanner {  # prebuild image, no tools available
-  sleep 5
+  sleep 5  # should not be hardcoded
 }
 
 function Sqlserver {  # shellcheck disable=SC2317
@@ -213,6 +262,13 @@ function Sybase {  # shellcheck disable=SC2317
   go
 EOF
 }  # no status 1 on error
+
+function Tidb {  # shellcheck disable=SC2317
+  cat <<EOF | docker exec -i jsql-tidb /bin/bash
+  yum -y install mysql
+  mysql -h 127.0.0.1 -P 4000 -u root -e "select 'jsqlValue' as jsqlColumn"
+EOF
+}  # correct status 1 on error
 
 function Vertica {  # shellcheck disable=SC2317
   cat <<EOF | docker exec -i jsql-vertica /opt/vertica/bin/vsql -U dbadmin -w password

